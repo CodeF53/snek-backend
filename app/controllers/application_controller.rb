@@ -2,7 +2,7 @@ class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
 
   get '/leaderboard' do
-    User.all.each(&:leaderboard_data).to_json
+    User.all.map(&:leaderboard_data).to_json
   end
 
   post '/login' do
@@ -27,7 +27,7 @@ class ApplicationController < Sinatra::Base
     return { error: 'invalid user, user does not exist!' }.to_json unless stated_user.empty?
     return { error: 'invalid session cookie' }.to_json unless stated_user.session_cookie == params[:session_cookie]
 
-    play = Play.create(user_id: params[:id], playtime: params[:playtime], score: params[:score])
+    play = stated_user.new_play(playtime: params[:playtime], score: params[:score])
     return play.to_json
   end
 end
